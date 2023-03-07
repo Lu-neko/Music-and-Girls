@@ -35,7 +35,7 @@ for (let artist of artists) {
 for (let sound of sounds) {
     let content = document.createElement("div");
     let audio = document.createElement("audio");
-    audio.src = sound[0];
+    audio.src = "musics/"+sound[0];
     audio.controls = true;
     content.appendChild(audio);
     content.appendChild(select.cloneNode(deep = true))

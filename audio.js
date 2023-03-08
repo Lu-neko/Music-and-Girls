@@ -1,11 +1,9 @@
-const audioContext = new window.AudioContext();
+let audioContext;
 
-const analyser = audioContext.createAnalyser();
-analyser.fftSize = 2048;
+let analyser;
 
-const bufferLength = analyser.frequencyBinCount;
-const dataArray = new Uint8Array(bufferLength);
-analyser.getByteTimeDomainData(dataArray);
+let bufferLength;
+let dataArray;
 
 
 const sounds = authors.map(value => ({ value, sort: Math.random() })).sort((a, b) => a.sort - b.sort).map(({ value }) => value);
@@ -55,11 +53,20 @@ for (let sound of sounds) {
                 vibrate: Math.max(...dataArray) - 128
             });
         }
-
     });
 
-    let track = audioContext.createMediaElementSource(audio);
-    track.connect(analyser).connect(audioContext.destination);
+    audio.onplay = function() {
+        if (!audioContext) {
+            audioContext = new window.AudioContext();
+            analyser = audioContext.createAnalyser();
+            analyser.fftSize = 2048;
+            bufferLength = analyser.frequencyBinCount;
+            dataArray = new Uint8Array(bufferLength);
+            analyser.getByteTimeDomainData(dataArray);
+        }
+        let track = audioContext.createMediaElementSource(this);
+        track.connect(analyser).connect(audioContext.destination);
+    }.bind(audio);
 }
 
 animation = [
@@ -86,9 +93,9 @@ validate.addEventListener("click", () => {
             score += 1;
         }
     }
-    if (score < 3){
+    if (score < 3) {
         result.textContent = "Sad, you only got ";
-    } else if (score < 5){
+    } else if (score < 5) {
         result.textContent = "You're on the way! You got "
     } else if (score < 7) {
         result.textContent = "Almost here! You got "
@@ -96,5 +103,5 @@ validate.addEventListener("click", () => {
         result.textContent = "Well played! You got "
     }
     result.textContent += score + "/" + elements.length + "!";
-    result.animate(animation, { duration: 3000, iterations: 1});
+    result.animate(animation, { duration: 3000, iterations: 1 });
 })
